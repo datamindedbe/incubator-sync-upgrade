@@ -2,13 +2,16 @@ from difflib import unified_diff
 from importlib.util import spec_from_file_location, module_from_spec
 from pathlib import Path
 from re import search, match
+from shutil import move
 from sys import modules
 
+from git import Repo
 from libcst import Module
 from libcst.codemod import TransformResult, TransformSuccess, TransformFailure
 from rich.console import Console
 
-from syncupgrade.exceptions.custom_exceptions import RefactoringFileNotFound
+from syncupgrade.exceptions.custom_exceptions import RefactoringFileNotFound, GitFolderNotFound
+# from syncupgrade.git_integration.git_wrapper import GitWrapper
 
 cli_console = Console(log_time=True)
 
@@ -90,3 +93,17 @@ def parse_refactoring_file(refactoring_file: Path):
         spec.loader.exec_module(module)
         return module.update()
     raise RefactoringFileNotFound(refactoring_file)
+
+
+def parse_local_registry(registry: Path):
+    if registry == Path("./refactoring_files/"):
+        return registry
+    return registry.joinpath("refactoring_files")
+
+
+
+def find_root_path():pass
+    # try:
+    #     return GitWrapper().repo.git_dir
+    # except GitFolderNotFound():
+    #     return Repo().init().git_dir
