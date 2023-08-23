@@ -104,7 +104,7 @@ def cli_runner():
 
 @fixture
 def registry_manager():
-    return RegistryManager(ApplyCommandOptions(package="", version="", registry=""))
+    return RegistryManager(ApplyCommandOptions(package="", version="", registry=""), ".")
 
 
 renamer = (

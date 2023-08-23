@@ -57,7 +57,6 @@ class RegistryManager:
         return "Got remote"
 
     def get_codmods(self):
-        self.move_refactoring_files_folder(self.find_root_path())
         if not self.cli_options.refactoring_file_path:
             return self._find_all_transformation_modules()
         if codmods := self._find_transformation_module(self.cli_options.refactoring_file_path):
@@ -83,7 +82,9 @@ class RegistryManager:
 
     @staticmethod
     def move_refactoring_files_folder(root_path: Union[str, Path]):
+        print(root_path)
         refactoring_folder_path = next(Path(root_path).rglob("refactoring_files"), None)
+        print(refactoring_folder_path)
         move(refactoring_folder_path, f"{root_path}/refactoring_files")
 
     def find_root_path(self):

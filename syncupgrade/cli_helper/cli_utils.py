@@ -47,9 +47,8 @@ class CliHelper:
                 self.git_client.clone_remote_registries(self.cli_options.registry))
         return self.registry_manager.create_local_registries()
 
-    def __get_git_client(self):
-        if not self.cli_options.activate_git and not self.cli_options.remote:
-            return None
+    @staticmethod
+    def __get_git_client():
         try:
             return GithubClient()
         except GitFolderNotFound:

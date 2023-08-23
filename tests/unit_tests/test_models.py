@@ -11,7 +11,7 @@ from syncupgrade.utils.option_conditions import package_conditions, version_cond
 
 def test_init_options_model():
     init_options = InitOptions(package="package", version="2", registry="directory")
-    assert init_options.refactoring_file_path == Path("directory/upgrade_package_2.py")
+    assert init_options.refactoring_file_path == Path("directory/refactoring_files/upgrade_package_2.py")
     assert init_options.new_branch_name == "sync-upgrade/upgrade-package-2"
 
 
@@ -31,8 +31,8 @@ def test_validate_version_package_common_model():
         CommonOptions(package="", registry="directory", version="version")
 
 
-def test_validate_file_exists_init_model():
-    with raises(ValidationError, match="tests/conftest.py already exists"):
+def test_validate_cannot_use_file_init_model():
+    with raises(ValidationError, match="Registry cannot be a file in the init command"):
         InitOptions(registry="tests/conftest.py", package="", version="")
 
 
