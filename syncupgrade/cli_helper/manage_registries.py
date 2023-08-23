@@ -2,8 +2,6 @@ from pathlib import Path
 from shutil import rmtree, move
 from typing import Union
 
-from git import Repo
-
 from syncupgrade.exceptions.custom_exceptions import LoadingCodmodsFailed, UpdateMethodNotFound, \
     RefactoringFileNotFound, RefactoringFilesFolderMissing
 from syncupgrade.models.cli_models import CommonOptions
@@ -91,7 +89,3 @@ class RegistryManager:
     def find_root_path(self):
         if self.root_path:
             return Path(self.root_path).parent
-        temp_repo = Repo().init()
-        root_path = temp_repo.git_dir
-        rmtree(root_path)
-        return Path(root_path).parent

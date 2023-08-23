@@ -1,44 +1,20 @@
+from shutil import rmtree
 from typing import Union
-from urllib.parse import urlparse
 
+from git import Repo
 from typer import prompt
 
 from syncupgrade.cli_helper.manage_registries import RegistryManager
-from syncupgrade.git_integration.git_wrapper import GithubClient
+from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
+from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper
 from syncupgrade.models.cli_models import InitOptions, ApplyCommandOptions
 from syncupgrade.models.enum_models import ApplyMode
-
-python_file = """from pathlib import Path
-
-from syncupgrade import SyncUpgrade, RenameRefactoring, AddRefactoring
-
-def update():
-    renamer = (
-        RenameRefactoring()
-        .rename_param("old_param_name", 'new_param_name')
-        .rename_imports("old_import_attribute", "new_import_attribute")
-        .rename_class("old_class_name", "new_class_name")
-        .rename_variables("old_variable_name", "new_variable_name")
-        .rename_functions("old_function_name", "new_function_name")
-  )
-    add = (
-        AddRefactoring()
-        .add_import_attribute("ImportAlias", "new_import_attribute")    
-    )
-
-    return (
-        SyncUpgrade(Path(__file__).parent.parent)
-        .apply_renames(renamer)
-        .apply_add(add)
-        .apply_custom_transformation()
-    )
-"""
 
 
 class CliHelper:
     def __init__(self, cli_options: Union[InitOptions, ApplyCommandOptions]):
         self.cli_options = cli_options
-        self.git_client = GithubClient() if self.cli_options.activate_git else None
+        self.git_client = self.__get_git_client()
         self.registry_manager = RegistryManager(self.cli_options,
                                                 self.git_client.get_root_path() if self.git_client else None)
 
@@ -70,3 +46,14 @@ class CliHelper:
             return self.registry_manager.get_remote_registries(
                 self.git_client.clone_remote_registries(self.cli_options.registry))
         return self.registry_manager.create_local_registries()
+
+    def __get_git_client(self):
+        if not self.cli_options.activate_git and not self.cli_options.remote:
+            return None
+        try:
+            return GithubClient()
+        except GitFolderNotFound:
+            root_path = Repo().init().git_dir
+            git_client = GitWrapper()
+            rmtree(root_path)
+            return git_client
