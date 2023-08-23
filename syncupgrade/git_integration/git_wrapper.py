@@ -5,7 +5,7 @@ from shutil import rmtree
 from git import Repo, InvalidGitRepositoryError, GitCommandError
 from requests import post, get
 
-from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
+from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound, CloneRemoteRegistryFailed
 from syncupgrade.models.cli_models import ApplyCommandOptions
 from syncupgrade.utils.parsing_utils import format_pr_link
 
@@ -64,7 +64,7 @@ class GitWrapper:
             self.repo.clone_from(registry_link, str(remote_local_path))
             return {"root_path": Path(self.repo.git_dir).parent, "remote_local_path": remote_local_path}
         except GitCommandError as clone_error:
-            print("clone failed", clone_error)
+            raise CloneRemoteRegistryFailed from clone_error
 
     def get_root_path(self):
         return self.repo.git_dir

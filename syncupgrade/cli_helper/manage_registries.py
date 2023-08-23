@@ -82,9 +82,7 @@ class RegistryManager:
 
     @staticmethod
     def move_refactoring_files_folder(root_path: Union[str, Path]):
-        print(root_path)
         refactoring_folder_path = next(Path(root_path).rglob("refactoring_files"), None)
-        print(refactoring_folder_path)
         move(refactoring_folder_path, f"{root_path}/refactoring_files")
 
     def find_root_path(self):
