@@ -90,3 +90,9 @@ def parse_refactoring_file(refactoring_file: Path):
         spec.loader.exec_module(module)
         return module.update()
     raise RefactoringFileNotFound(refactoring_file)
+
+
+def parse_local_registry(registry: Path):
+    if registry == Path("./refactoring_files/"):
+        return registry
+    return registry.joinpath("refactoring_files")
