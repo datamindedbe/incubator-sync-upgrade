@@ -1,3 +1,4 @@
+from os import environ
 from shutil import rmtree
 from typing import Union
 
@@ -9,6 +10,7 @@ from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
 from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper
 from syncupgrade.models.cli_models import InitOptions, ApplyCommandOptions
 from syncupgrade.models.enum_models import ApplyMode
+from syncupgrade.utils.parsing_utils import cli_console
 
 
 class CliHelper:
@@ -34,10 +36,14 @@ class CliHelper:
         if not self.git_client.check_current_branch(self.cli_options.new_branch_name):
             self.git_client.create_checkout_new_branch(self.cli_options.new_branch_name)
         self.__apply_code_changes()
-        if self.cli_options.apply_mode == ApplyMode.pull_request:
+        if self.cli_options.apply_mode != ApplyMode.pull_request:
+            return f"Changes applied locally in branch {self.cli_options.new_branch_name}"
+        if environ["GIT_TOKEN"]:
+            git_token = environ["GIT_TOKEN"]
+        else:
+            cli_console.log("You can set GIT_TOKEN environment variable to avoid prompt")
             git_token = prompt("Enter your git token", hide_input=True)
-            return self.git_client.push_to_remote(self.cli_options, git_token)
-        return f"Changes applied locally in branch {self.cli_options.new_branch_name}"
+        return self.git_client.push_to_remote(self.cli_options, git_token)
 
     def process_registries(self):
         if self.cli_options.activate_git:
