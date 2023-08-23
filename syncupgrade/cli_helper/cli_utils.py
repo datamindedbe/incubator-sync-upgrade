@@ -10,6 +10,7 @@ from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
 from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper
 from syncupgrade.models.cli_models import InitOptions, ApplyCommandOptions
 from syncupgrade.models.enum_models import ApplyMode
+from syncupgrade.utils.parsing_utils import cli_console
 
 
 class CliHelper:
@@ -40,6 +41,7 @@ class CliHelper:
         if environ["GIT_TOKEN"]:
             git_token = environ["GIT_TOKEN"]
         else:
+            cli_console.log("You can set GIT_TOKEN environment variable to avoid prompt")
             git_token = prompt("Enter your git token", hide_input=True)
         return self.git_client.push_to_remote(self.cli_options, git_token)
 
