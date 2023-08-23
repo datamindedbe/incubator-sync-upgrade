@@ -1,3 +1,4 @@
+from os import environ
 from shutil import rmtree
 from typing import Union
 
@@ -34,10 +35,13 @@ class CliHelper:
         if not self.git_client.check_current_branch(self.cli_options.new_branch_name):
             self.git_client.create_checkout_new_branch(self.cli_options.new_branch_name)
         self.__apply_code_changes()
-        if self.cli_options.apply_mode == ApplyMode.pull_request:
+        if self.cli_options.apply_mode != ApplyMode.pull_request:
+            return f"Changes applied locally in branch {self.cli_options.new_branch_name}"
+        if environ["GIT_TOKEN"]:
+            git_token = environ["GIT_TOKEN"]
+        else:
             git_token = prompt("Enter your git token", hide_input=True)
-            return self.git_client.push_to_remote(self.cli_options, git_token)
-        return f"Changes applied locally in branch {self.cli_options.new_branch_name}"
+        return self.git_client.push_to_remote(self.cli_options, git_token)
 
     def process_registries(self):
         if self.cli_options.activate_git:
