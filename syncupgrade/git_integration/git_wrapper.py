@@ -1,5 +1,8 @@
-from git import Repo, InvalidGitRepositoryError
 from json import dumps
+from pathlib import Path
+from shutil import rmtree
+
+from git import Repo, InvalidGitRepositoryError, GitCommandError
 from requests import post, get
 
 from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
@@ -52,6 +55,19 @@ class GitWrapper:
         return [
             branch.name for branch in self.repo.heads
         ]
+
+    def clone_remote_registries(self, registry_link: str):
+        try:
+            remote_local_path = Path(self.repo.git_dir).parent.joinpath(registry_link.split("/")[-1][:-4])
+            if remote_local_path.exists():
+                rmtree(remote_local_path)
+            self.repo.clone_from(registry_link, str(remote_local_path))
+            return {"root_path": Path(self.repo.git_dir).parent, "remote_local_path": remote_local_path}
+        except GitCommandError as clone_error:
+            print("clone failed", clone_error)
+
+    def get_root_path(self):
+        return self.repo.git_dir
 
 
 class GithubClient(GitWrapper):

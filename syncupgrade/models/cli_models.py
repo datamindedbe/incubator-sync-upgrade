@@ -1,21 +1,23 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
+from urllib.parse import urlparse
 
 from pydantic import BaseModel, field_validator, model_validator
 
 from syncupgrade.models.enum_models import ApplyMode
 from syncupgrade.utils.option_conditions import package_conditions, version_condition, validate_refactoring_file_path, \
     validate_git_behavior, package_version_condition
-from syncupgrade.utils.parsing_utils import format_branch_name, format_file_name
+from syncupgrade.utils.parsing_utils import format_branch_name, format_file_name, parse_local_registry
 
 
 class CommonOptions(BaseModel):
     package: Optional[str]
     version: Optional[str]
-    registry: Path
+    registry: Union[str, Path]
     new_branch_name: Optional[str] = ""
-    refactoring_file_path: Optional[Path] = ""
+    refactoring_file_path: Optional[Path] = None
     activate_git: Optional[bool] = True
+    remote: Optional[bool] = False
 
     @field_validator("package")
     def validate_package(cls, package: str):
@@ -44,17 +46,26 @@ class InitOptions(CommonOptions):
     @model_validator(mode="after")
     def validate_format_model(self):
         self._format_fields()
-        if validate_refactoring_file_path(Path(self.refactoring_file_path)):
+        if not self.remote and validate_refactoring_file_path(Path(self.refactoring_file_path)):
             raise ValueError(f"{self.refactoring_file_path} already exists")
+        if self.remote and not str(self.registry).endswith(".git"):
+            raise ValueError("Valid remote registry must end with .git to clone")
         return self
+
+    @field_validator("registry")
+    def validate_registry(cls, registry: str):
+        if Path(registry).is_file() or Path(registry).suffix not in [".git", ""]:
+            raise ValueError("Registry cannot be a file in the init command")
+        return registry
 
     def _format_fields(self):
         super()._format_fields()
-        if self.registry.is_file() or self.registry.suffix:
-            self.refactoring_file_path = self.registry
-            self.registry = self.registry.parent
+        if urlparse(self.registry).scheme:
+            self.remote = True
         else:
-            self.refactoring_file_path = self.registry / format_file_name(self.package, self.version)
+            self.registry = Path(self.registry)
+            self.refactoring_file_path = parse_local_registry(self.registry) / format_file_name(self.package,
+                                                                                                self.version)
 
 
 class ApplyCommandOptions(CommonOptions):
@@ -62,8 +73,8 @@ class ApplyCommandOptions(CommonOptions):
     base_branch: Optional[str] = ""
 
     @field_validator("registry")
-    def validate_registry(cls, registry: Path):
-        if registry.exists():
+    def validate_registry(cls, registry: str):
+        if Path(registry).exists():
             return registry
         raise ValueError(f"{registry} registry not found")
 
@@ -76,6 +87,7 @@ class ApplyCommandOptions(CommonOptions):
 
     def _format_fields(self):
         super()._format_fields()
+        self.registry = Path(self.registry)
         if self.registry.is_file():
             self.refactoring_file_path = self.registry
         elif self.package:
