@@ -31,7 +31,7 @@ def test_validate_version_package_common_model():
         CommonOptions(package="", registry="directory", version="version")
 
 
-def test_validate_file_exists_init_model():
+def test_validate_cannot_use_file_init_model():
     with raises(ValidationError, match="Registry cannot be a file in the init command"):
         InitOptions(registry="tests/conftest.py", package="", version="")
 

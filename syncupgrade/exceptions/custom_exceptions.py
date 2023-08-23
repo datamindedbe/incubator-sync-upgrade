@@ -21,3 +21,13 @@ class MissingTransformationMethod(ModuleNotFoundError):
 class LoadingCodmodsFailed(ModuleNotFoundError):
     def __init__(self, message="Failed to load codmods"):
         super().__init__(message)
+
+
+class RefactoringFilesFolderMissing(ModuleNotFoundError):
+    def __init__(self, message="Refactoring files must be inside refactoring_files folder"):
+        super().__init__(message)
+
+
+class CloneRemoteRegistryFailed(Exception):
+    def __init__(self, message="Cloning remote registry failed"):
+        super().__init__(message)

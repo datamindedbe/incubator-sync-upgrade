@@ -1,9 +1,9 @@
 from pathlib import Path
 from shutil import rmtree, move
+from typing import Union
 
-from git import Repo
-
-from syncupgrade.exceptions.custom_exceptions import LoadingCodmodsFailed, UpdateMethodNotFound, RefactoringFileNotFound
+from syncupgrade.exceptions.custom_exceptions import LoadingCodmodsFailed, UpdateMethodNotFound, \
+    RefactoringFileNotFound, RefactoringFilesFolderMissing
 from syncupgrade.models.cli_models import CommonOptions
 from syncupgrade.utils.parsing_utils import parse_refactoring_file
 
@@ -52,13 +52,11 @@ class RegistryManager:
         try:
             self.move_refactoring_files_folder(path_data["root_path"])
         except FileNotFoundError as file_not_found:
-            print("refactoring_files folder not found")
-            print(file_not_found)
+            raise RefactoringFilesFolderMissing() from file_not_found
         rmtree(path_data["remote_local_path"])
         return "Got remote"
 
     def get_codmods(self):
-        self.move_refactoring_files_folder(self.find_root_path())
         if not self.cli_options.refactoring_file_path:
             return self._find_all_transformation_modules()
         if codmods := self._find_transformation_module(self.cli_options.refactoring_file_path):
@@ -83,14 +81,10 @@ class RegistryManager:
             raise RefactoringFileNotFound(refactoring_file, file_not_found_error) from file_not_found_error
 
     @staticmethod
-    def move_refactoring_files_folder(root_path: str):
+    def move_refactoring_files_folder(root_path: Union[str, Path]):
         refactoring_folder_path = next(Path(root_path).rglob("refactoring_files"), None)
         move(refactoring_folder_path, f"{root_path}/refactoring_files")
 
     def find_root_path(self):
         if self.root_path:
-            return self.root_path
-        temp_repo = Repo().init()
-        root_path = temp_repo.git_dir
-        rmtree(root_path)
-        return Path(root_path).parent
+            return Path(self.root_path).parent

@@ -1,9 +1,12 @@
+from shutil import rmtree
 from typing import Union
 
+from git import Repo
 from typer import prompt
 
 from syncupgrade.cli_helper.manage_registries import RegistryManager
-from syncupgrade.git_integration.git_wrapper import GithubClient
+from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
+from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper
 from syncupgrade.models.cli_models import InitOptions, ApplyCommandOptions
 from syncupgrade.models.enum_models import ApplyMode
 
@@ -11,7 +14,7 @@ from syncupgrade.models.enum_models import ApplyMode
 class CliHelper:
     def __init__(self, cli_options: Union[InitOptions, ApplyCommandOptions]):
         self.cli_options = cli_options
-        self.git_client = GithubClient() if self.cli_options.activate_git or self.cli_options.remote else None
+        self.git_client = self.__get_git_client()
         self.registry_manager = RegistryManager(self.cli_options,
                                                 self.git_client.get_root_path() if self.git_client else None)
 
@@ -43,3 +46,13 @@ class CliHelper:
             return self.registry_manager.get_remote_registries(
                 self.git_client.clone_remote_registries(self.cli_options.registry))
         return self.registry_manager.create_local_registries()
+
+    @staticmethod
+    def __get_git_client():
+        try:
+            return GithubClient()
+        except GitFolderNotFound:
+            root_path = Repo().init().git_dir
+            git_client = GitWrapper()
+            rmtree(root_path)
+            return git_client

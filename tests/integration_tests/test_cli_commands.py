@@ -59,14 +59,16 @@ def test_missing_update_method_no_git_fail(cli_runner):
 def test_init_no_git(cli_runner):
     result = cli_runner.invoke(cli, CliOptions.init_no_git_options)
     assert result.exit_code == 0
-    assert "template refactoring file created in tests/mock_registry/refactoring_files/upgrade_project.py" in result.stdout
+    assert "template refactoring file created in tests/mock_registry/refactoring_files/upgrade_project.py" in \
+           result.stdout.replace("\n", "")
     shutil.rmtree("tests/mock_registry/")
 
 
 def test_init_package_version_no_git(cli_runner):
     result = cli_runner.invoke(cli, CliOptions.init_package_version_no_git_options)
     assert result.exit_code == 0
-    assert "template refactoring file created in tests/mock_registry/refactoring_files/upgrade_package_2.py" in result.stdout
+    assert "template refactoring file created in tests/mock_registry/refactoring_files/upgrade_package_2.py" \
+           in result.stdout.replace("\n", "")
     shutil.rmtree("tests/mock_registry/")
 
 
@@ -75,5 +77,6 @@ def test_init_exists_no_git(cli_runner):
     result = cli_runner.invoke(cli, CliOptions.init_no_git_exists_options)
     assert result.exit_code == 1
     assert isinstance(result.exception, ValidationError)
-    assert "tests/mock_registry/refactoring_files/upgrade_project.py already exists" in result.exception.errors()[0]["msg"]
+    assert "tests/mock_registry/refactoring_files/upgrade_project.py already exists" in result.exception.errors()[0][
+        "msg"]
     shutil.rmtree("tests/mock_registry/")
