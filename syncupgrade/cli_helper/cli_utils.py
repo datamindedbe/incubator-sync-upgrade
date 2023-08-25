@@ -53,12 +53,17 @@ class CliHelper:
                 self.git_client.clone_remote_registries(self.cli_options.registry))
         return self.registry_manager.create_local_registries()
 
-    @staticmethod
-    def __get_git_client():
+    def __get_git_client(self):
         try:
             return GithubClient()
-        except GitFolderNotFound:
-            root_path = Repo.init().git_dir
-            git_client = GitWrapper()
-            rmtree(root_path)
-            return git_client
+        except GitFolderNotFound as found_no_git_repo:
+            if self.cli_options.activate_git:
+                raise GitFolderNotFound() from found_no_git_repo
+            return self.__create_tempo_repo()
+
+    @staticmethod
+    def __create_tempo_repo():
+        root_path = Repo.init().git_dir
+        git_client = GitWrapper()
+        rmtree(root_path)
+        return git_client
