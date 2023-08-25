@@ -58,7 +58,7 @@ class CliHelper:
         try:
             return GithubClient()
         except GitFolderNotFound:
-            root_path = Repo().init().git_dir
+            root_path = Repo.init().git_dir
             git_client = GitWrapper()
             rmtree(root_path)
             return git_client
