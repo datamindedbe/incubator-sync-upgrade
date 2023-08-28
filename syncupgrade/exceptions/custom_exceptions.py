@@ -31,3 +31,8 @@ class RefactoringFilesFolderMissing(ModuleNotFoundError):
 class CloneRemoteRegistryFailed(Exception):
     def __init__(self, message="Cloning remote registry failed"):
         super().__init__(message)
+
+
+class RestCallFailed(Exception):
+    def __init__(self, message, status_code):
+        super().__init__(f"Rest call to git failed with status code {status_code}, {message}")
