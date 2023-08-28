@@ -1,13 +1,15 @@
 from json import dumps
 from pathlib import Path
 from shutil import rmtree
+from urllib.parse import quote
 
 from git import Repo, InvalidGitRepositoryError, GitCommandError
 from requests import post, get
+from requests.models import Response
 
-from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound, CloneRemoteRegistryFailed
+from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound, CloneRemoteRegistryFailed, RestCallFailed
 from syncupgrade.models.cli_models import ApplyCommandOptions
-from syncupgrade.utils.parsing_utils import format_pr_link
+from syncupgrade.utils.parsing_utils import format_github_pr_link
 
 
 class GitWrapper:
@@ -45,6 +47,9 @@ class GitWrapper:
     def get_default_branch(self, git_token: str):
         raise NotImplementedError("Git clients must implement this method")
 
+    def _format_rest_url(self):
+        raise NotImplementedError("Git clients must implement this method")
+
     def _find_branch_object(self, branch_name: str):
         for branch in self.repo.heads:
             if branch.name == branch_name:
@@ -69,12 +74,17 @@ class GitWrapper:
     def get_root_path(self):
         return self.repo.git_dir
 
+    @staticmethod
+    def process_rest_calls(response: Response):
+        if response.ok:
+            return response.json()
+        raise RestCallFailed(response.reason, response.status_code)
+
 
 class GithubClient(GitWrapper):
     def __init__(self):
         super().__init__()
-        self.github_rest_url = f"{self.repo.remotes.origin.url.split('.git')[0]}".replace("github.com",
-                                                                                          "api.github.com/repos")
+        self.github_rest_url = self._format_rest_url()
 
     def create_pull_request(self, git_token: str, **kwargs):
         if kwargs.get("cli_options").package:
@@ -91,9 +101,8 @@ class GithubClient(GitWrapper):
                 "head": kwargs.get("branch_name"),
                 "base": kwargs.get("base_branch")
             }))
-        if response.ok:
-            return format_pr_link(response.json().get("url"))
-        return response.json()
+        if result := self.process_rest_calls(response):
+            return format_github_pr_link(result.get("url"))
 
     def get_default_branch(self, git_token: str):
         response = get(
@@ -102,5 +111,46 @@ class GithubClient(GitWrapper):
                 "Authorization": f"token {git_token}",
                 "Content-Type": "application/json"},
         )
-        if response.ok:
-            return response.json().get("default_branch")
+        if result := self.process_rest_calls(response):
+            return result.get("default_branch")
+
+    def _format_rest_url(self):
+        return f"{self.repo.remotes.origin.url.split('.git')[0]}".replace("github.com", "api.github.com/repos")
+
+
+class GitlabClient(GitWrapper):
+    def __init__(self):
+        super().__init__()
+        self.gitlab_rest_url = self._format_rest_url()
+
+    def _format_rest_url(self):
+        return f"https://gitlab.com/api/" \
+               f"v4/projects/{quote(self.repo.remotes.origin.url.split(':')[-1].replace('.git', ''), safe='')}"
+
+    def create_pull_request(self, git_token: str, **kwargs):
+        if kwargs.get("cli_options").package:
+            pr_title = f"upgrading {kwargs.get('cli_options').package} to {kwargs.get('cli_options').version}"
+        else:
+            pr_title = "upgrading project"
+        response = post(
+            f"{self.gitlab_rest_url}/merge_requests",
+            headers={
+                "Authorization": "Bearer {0}".format(git_token),
+                "Content-Type": "application/json"},
+            data=dumps({
+                "title": pr_title,
+                "source_branch": kwargs.get("branch_name"),
+                "target_branch": kwargs.get("base_branch")
+            }))
+        if result := self.process_rest_calls(response):
+            return f"PR link {result.get('web_url')}"
+
+    def get_default_branch(self, git_token: str):
+        response = get(
+            f"{self.gitlab_rest_url}",
+            headers={
+                "Authorization": "Bearer {0}".format(git_token),
+                "Content-Type": "application/json"},
+        )
+        if result := self.process_rest_calls(response):
+            return result["default_branch"]
