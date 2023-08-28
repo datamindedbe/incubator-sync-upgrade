@@ -79,7 +79,7 @@ def validation_refactoring_input(changes: tuple):
     raise ValueError("Refactoring input cannot contain special characters")
 
 
-def format_pr_link(url: str):
+def format_github_pr_link(url: str):
     return f"PR link {url.replace('api.github.com/repos', 'github.com').replace('pulls', 'pull')}"
 
 
