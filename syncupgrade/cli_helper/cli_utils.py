@@ -38,7 +38,7 @@ class CliHelper:
         self.__apply_code_changes()
         if self.cli_options.apply_mode != ApplyMode.pull_request:
             return f"Changes applied locally in branch {self.cli_options.new_branch_name}"
-        if environ["GIT_TOKEN"]:
+        if environ.get("GIT_TOKEN"):
             git_token = environ["GIT_TOKEN"]
         else:
             cli_console.log("You can set GIT_TOKEN environment variable to avoid prompt")
