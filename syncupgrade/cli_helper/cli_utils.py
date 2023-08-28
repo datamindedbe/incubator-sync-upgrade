@@ -7,7 +7,7 @@ from typer import prompt
 
 from syncupgrade.cli_helper.manage_registries import RegistryManager
 from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound
-from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper
+from syncupgrade.git_integration.git_wrapper import GithubClient, GitWrapper, GitlabClient
 from syncupgrade.models.cli_models import InitOptions, ApplyCommandOptions
 from syncupgrade.models.enum_models import ApplyMode
 from syncupgrade.utils.parsing_utils import cli_console
@@ -55,7 +55,11 @@ class CliHelper:
 
     def __get_git_client(self):
         try:
-            return GithubClient()
+            map_dict = {
+                "github": GithubClient,
+                "gitlab": GitlabClient
+            }
+            return map_dict[GitWrapper().find_remote_provider()]()
         except GitFolderNotFound as found_no_git_repo:
             if self.cli_options.activate_git:
                 raise GitFolderNotFound() from found_no_git_repo

@@ -80,6 +80,11 @@ class GitWrapper:
             return response.json()
         raise RestCallFailed(response.reason, response.status_code)
 
+    def find_remote_provider(self):
+        for remote_provider in ("github", "gitlab"):
+            if remote_provider in self.repo.remotes.origin.url:
+                return remote_provider
+
 
 class GithubClient(GitWrapper):
     def __init__(self):
