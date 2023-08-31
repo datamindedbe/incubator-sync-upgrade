@@ -1,5 +1,6 @@
 from json import dumps
 from pathlib import Path
+from re import search
 from shutil import rmtree
 from urllib.parse import quote
 
@@ -81,7 +82,7 @@ class GitWrapper:
         raise RestCallFailed(response.reason, response.status_code)
 
     def find_remote_provider(self):
-        for remote_provider in ("github", "gitlab"):
+        for remote_provider in ("github", "gitlab", "bitbucket"):
             if remote_provider in self.repo.remotes.origin.url:
                 return remote_provider
 
@@ -159,3 +160,52 @@ class GitlabClient(GitWrapper):
         )
         if result := self.process_rest_calls(response):
             return result["default_branch"]
+
+
+class BitbucketClient(GitWrapper):
+    def __init__(self):
+        super().__init__()
+        self.bitbucket_rest_url = self._format_rest_url()
+
+    def _format_rest_url(self):
+        repo_path = search(r'(?<=\.org)(.*)(?=\.git)', self.repo.remotes.origin.url).group(1).strip("/")
+        domain_path = search(r'@([^/]+\.org)', self.repo.remotes.origin.url).group(1)
+        return f"https://api.{domain_path}/2.0/repositories/{repo_path}"
+
+    def get_default_branch(self, git_token: str):
+        response = get(
+            self.bitbucket_rest_url,
+            headers={
+                "Authorization": "Bearer {0}".format(git_token),
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            }
+        )
+        if result := self.process_rest_calls(response):
+            return result["mainbranch"]["name"]
+
+    def create_pull_request(self, git_token: str, **kwargs):
+        if kwargs.get("cli_options").package:
+            pr_title = f"upgrading {kwargs.get('cli_options').package} to {kwargs.get('cli_options').version}"
+        else:
+            pr_title = "upgrading project"
+        response = post(
+            f"{self.bitbucket_rest_url}/pullrequests",
+            headers={
+                "Authorization": "Bearer {0}".format(git_token),
+                "Accept": "application/json",
+                "Content-Type": "application/json"},
+            data=dumps({
+                "title": pr_title,
+                "source": {
+                    "branch": {
+                        "name": kwargs.get("branch_name")
+                    }
+                },
+                "destination": {
+                    "branch": {
+                        "name": kwargs.get("base_branch")
+                    }
+                }}))
+        if result := self.process_rest_calls(response):
+            return f"PR link {result['links']['html']['href']}"
