@@ -1,16 +1,11 @@
-from json import dumps
 from pathlib import Path
-from re import search
 from shutil import rmtree
-from urllib.parse import quote
 
 from git import Repo, InvalidGitRepositoryError, GitCommandError
-from requests import post, get
 from requests.models import Response
 
 from syncupgrade.exceptions.custom_exceptions import GitFolderNotFound, CloneRemoteRegistryFailed, RestCallFailed
 from syncupgrade.models.cli_models import ApplyCommandOptions
-from syncupgrade.utils.parsing_utils import format_github_pr_link
 
 
 class GitWrapper:
@@ -48,7 +43,7 @@ class GitWrapper:
     def get_default_branch(self, git_token: str):
         raise NotImplementedError("Git clients must implement this method")
 
-    def _format_rest_url(self):
+    def format_rest_url(self):
         raise NotImplementedError("Git clients must implement this method")
 
     def _find_branch_object(self, branch_name: str):
@@ -85,127 +80,3 @@ class GitWrapper:
         for remote_provider in ("github", "gitlab", "bitbucket"):
             if remote_provider in self.repo.remotes.origin.url:
                 return remote_provider
-
-
-class GithubClient(GitWrapper):
-    def __init__(self):
-        super().__init__()
-        self.github_rest_url = self._format_rest_url()
-
-    def create_pull_request(self, git_token: str, **kwargs):
-        if kwargs.get("cli_options").package:
-            pr_title = f"upgrading {kwargs.get('cli_options').package} to {kwargs.get('cli_options').version}"
-        else:
-            pr_title = "upgrading project"
-        response = post(
-            f"{self.github_rest_url}/pulls",
-            headers={
-                "Authorization": f"token {git_token}",
-                "Content-Type": "application/json"},
-            data=dumps({
-                "title": pr_title,
-                "head": kwargs.get("branch_name"),
-                "base": kwargs.get("base_branch")
-            }))
-        if result := self.process_rest_calls(response):
-            return format_github_pr_link(result.get("url"))
-
-    def get_default_branch(self, git_token: str):
-        response = get(
-            self.github_rest_url,
-            headers={
-                "Authorization": f"token {git_token}",
-                "Content-Type": "application/json"},
-        )
-        if result := self.process_rest_calls(response):
-            return result.get("default_branch")
-
-    def _format_rest_url(self):
-        return f"{self.repo.remotes.origin.url.split('.git')[0]}".replace("github.com", "api.github.com/repos")
-
-
-class GitlabClient(GitWrapper):
-    def __init__(self):
-        super().__init__()
-        self.gitlab_rest_url = self._format_rest_url()
-
-    def _format_rest_url(self):
-        return f"https://gitlab.com/api/" \
-               f"v4/projects/{quote(self.repo.remotes.origin.url.split(':')[-1].replace('.git', ''), safe='')}"
-
-    def create_pull_request(self, git_token: str, **kwargs):
-        if kwargs.get("cli_options").package:
-            pr_title = f"upgrading {kwargs.get('cli_options').package} to {kwargs.get('cli_options').version}"
-        else:
-            pr_title = "upgrading project"
-        response = post(
-            f"{self.gitlab_rest_url}/merge_requests",
-            headers={
-                "Authorization": "Bearer {0}".format(git_token),
-                "Content-Type": "application/json"},
-            data=dumps({
-                "title": pr_title,
-                "source_branch": kwargs.get("branch_name"),
-                "target_branch": kwargs.get("base_branch")
-            }))
-        if result := self.process_rest_calls(response):
-            return f"PR link {result.get('web_url')}"
-
-    def get_default_branch(self, git_token: str):
-        response = get(
-            f"{self.gitlab_rest_url}",
-            headers={
-                "Authorization": "Bearer {0}".format(git_token),
-                "Content-Type": "application/json"},
-        )
-        if result := self.process_rest_calls(response):
-            return result["default_branch"]
-
-
-class BitbucketClient(GitWrapper):
-    def __init__(self):
-        super().__init__()
-        self.bitbucket_rest_url = self._format_rest_url()
-
-    def _format_rest_url(self):
-        repo_path = search(r'(?<=\.org)(.*)(?=\.git)', self.repo.remotes.origin.url).group(1).strip("/")
-        domain_path = search(r'@([^/]+\.org)', self.repo.remotes.origin.url).group(1)
-        return f"https://api.{domain_path}/2.0/repositories/{repo_path}"
-
-    def get_default_branch(self, git_token: str):
-        response = get(
-            self.bitbucket_rest_url,
-            headers={
-                "Authorization": "Bearer {0}".format(git_token),
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-        )
-        if result := self.process_rest_calls(response):
-            return result["mainbranch"]["name"]
-
-    def create_pull_request(self, git_token: str, **kwargs):
-        if kwargs.get("cli_options").package:
-            pr_title = f"upgrading {kwargs.get('cli_options').package} to {kwargs.get('cli_options').version}"
-        else:
-            pr_title = "upgrading project"
-        response = post(
-            f"{self.bitbucket_rest_url}/pullrequests",
-            headers={
-                "Authorization": "Bearer {0}".format(git_token),
-                "Accept": "application/json",
-                "Content-Type": "application/json"},
-            data=dumps({
-                "title": pr_title,
-                "source": {
-                    "branch": {
-                        "name": kwargs.get("branch_name")
-                    }
-                },
-                "destination": {
-                    "branch": {
-                        "name": kwargs.get("base_branch")
-                    }
-                }}))
-        if result := self.process_rest_calls(response):
-            return f"PR link {result['links']['html']['href']}"
