@@ -44,8 +44,7 @@ This will create a refactoring file from a template.
 * **Without flags** : Will check-out to a new branch and a template refactoring file.
 * **Package and Version flags** can only be used together. They will be used to format the refactoring file name
   and the new branch name.
-* **Registry flag** is the directory that holds the refactoring files. Remote registries will be supported in a future
-  release.
+* **Registry flag** is the directory that holds the refactoring files. Registries can also be a link to a git repository that holds the refactoring files.
 * **Git flag** : Activates or deactivates git functionalities.
 
 <h3>Refactoring API</h3>
@@ -105,8 +104,7 @@ This will fetch the defined changes from the refactoring file under registry and
   all refactoring files located in the registry directory and perform a dry run, describing the changes without actually
   applying them.
 * **Package and Version flags** if used, will only fetch a specific refactoring file.
-* **Registry flag** is the directory that holds the refactoring files. Remote registries will be supported in a future
-  release.
+* **Registry flag** is the directory that holds the refactoring files. Registries can also be a link to a git repository that holds the refactoring files.
 * **Git flag** : Activates or deactivates git functionalities.
 * **Apply Mode flag** The methods to apply the code changes. A `Dry Run` will display the differences without actually
   modifying the code. `Apply` will locally apply the changes to the codebase. `Pull Request` will both apply the changes
