@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sync-upgrade"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Moenes Ben Soussia <moenes.bensoussia@dataminded.be>", "Pascal Knapen <pascal.knapen@dataminded.be>"]
 readme = "README.md"
