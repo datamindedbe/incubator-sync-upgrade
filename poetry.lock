@@ -135,11 +135,6 @@ files = [
 [package.dependencies]
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
-[package.source]
-type = "legacy"
-url = "https://test.pypi.org/simple"
-reference = "test-pypi"
-
 [[package]]
 name = "colorama"
 version = "0.4.6"
@@ -150,11 +145,6 @@ files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
 ]
-
-[package.source]
-type = "legacy"
-url = "https://test.pypi.org/simple"
-reference = "test-pypi"
 
 [[package]]
 name = "coverage"
@@ -287,11 +277,6 @@ files = [
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
 ]
 
-[package.source]
-type = "legacy"
-url = "https://test.pypi.org/simple"
-reference = "test-pypi"
-
 [[package]]
 name = "libcst"
 version = "1.2.0"
@@ -299,21 +284,40 @@ description = "A concrete syntax tree with AST-like properties for Python 3.0 th
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "libcst-1.2.0.tar.gz", hash = "sha256:52d100aa72bec37f5b695df39af3a21b4b2d6898bbf47ed58b5a2ebc13b13bbb"},
+    {file = "libcst-1.2.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c0149d24a455536ff2e41b3a48b16d3ebb245e28035013c91bd868def16592a0"},
+    {file = "libcst-1.2.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ba24b8cf789db6b87c6e23a6c6365f5f73cb7306d929397581d5680149e9990c"},
+    {file = "libcst-1.2.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2bbb4e442224da46b59a248d7d632ed335eae023a921dea1f5c72d2a059f6be9"},
+    {file = "libcst-1.2.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7f4919978c2b395079b64d8a654357854767adbabab13998b39c1f0bc67da8a7"},
+    {file = "libcst-1.2.0-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5e54389abdea995b39ee96ad736ed1b0b8402ed30a7956b7a279c10baf0c0294"},
+    {file = "libcst-1.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:1d45718f7e7a1405a16fd8e7fc75c365120001b6928bfa3c4112f7e533990b9a"},
+    {file = "libcst-1.2.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:f080e9af843ff609f8f35fc7275c8bf08b02c31115e7cd5b77ca3b6a56c75096"},
+    {file = "libcst-1.2.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:3c7c0edfe3b878d64877671261c7b3ffe9d23181774bfad5d8fcbdbbbde9f064"},
+    {file = "libcst-1.2.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1b5fecb2b26fa3c1efe6e05ef1420522bd31bb4dae239e4c41fdf3ddbd853aeb"},
+    {file = "libcst-1.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:968b93400e66e6711a29793291365e312d206dbafd3fc80219cfa717f0f01ad5"},
+    {file = "libcst-1.2.0-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e01879aa8cd478bb8b1e4285cfd0607e64047116f7ab52bc2a787cde584cd686"},
+    {file = "libcst-1.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:b4066dcadf92b183706f81ae0b4342e7624fc1d9c5ca2bf2b44066cb74bf863f"},
+    {file = "libcst-1.2.0-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:5c0d548d92c6704bb07ce35d78c0e054cdff365def0645c1b57c856c8e112bb4"},
+    {file = "libcst-1.2.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:82373a35711a8bb2a664dba2b7aeb20bbcce92a4db40af964e9cb2b976f989e7"},
+    {file = "libcst-1.2.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0cb92398236566f0b73a0c73f8a41a9c4906c793e8f7c2745f30e3fb141a34b5"},
+    {file = "libcst-1.2.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:13ca9fe82326d82feb2c7b0f5a320ce7ed0d707c32919dd36e1f40792459bf6f"},
+    {file = "libcst-1.2.0-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:dded0e4f2e18150c4b07fedd7ef84a9abc7f9bd2d47cc1c485248ee1ec58e5cc"},
+    {file = "libcst-1.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:dece0362540abfc39cd2cf5c98cde238b35fd74a1b0167e2563e4b8bb5f47489"},
+    {file = "libcst-1.2.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:c80f36f4a02d530e28eac7073aabdea7c6795fc820773a02224021d79d164e8b"},
+    {file = "libcst-1.2.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:8b56130f18aca9a98b3bcaf5962b2b26c2dcdd6d5132decf3f0b0b635f4403ba"},
+    {file = "libcst-1.2.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4973a9d509cf1a59e07fac55a98f70bc4fd35e09781dffb3ec93ee32fc0de7af"},
+    {file = "libcst-1.2.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6dd388c74c04434b41e3b25fc4a0fafa3e6abf91f97181df55e8f8327fd903cc"},
+    {file = "libcst-1.2.0-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:38fbd56f885e1f77383a6d1d798a917ffbc6d28dc6b1271eddbf8511c194213e"},
+    {file = "libcst-1.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:f2342634f6c61fc9076dc0baf21e9cf5ef0195a06e1e95c0c9dc583ba3a30d00"},
+    {file = "libcst-1.2.0.tar.gz", hash = "sha256:71dd69fff76e7edaf8fae0f63ffcdbf5016e8cd83165b1d0688d6856aa48186a"},
 ]
 
 [package.dependencies]
 pyyaml = ">=5.2"
-typing_extensions = ">=3.7.4.2"
-typing_inspect = ">=0.4.0"
+typing-extensions = ">=3.7.4.2"
+typing-inspect = ">=0.4.0"
 
 [package.extras]
-dev = ["Sphinx (>=5.1.1)", "black (==23.12.1)", "build (>=0.10.0)", "coverage (>=4.5.4)", "fixit (==2.1.0)", "flake8 (==7.0.0)", "hypothesis (>=4.36.0)", "hypothesmith (>=0.0.4)", "jinja2 (==3.1.3)", "jupyter (>=1.0.0)", "maturin (>=0.8.3,<1.5)", "nbsphinx (>=0.4.2)", "prompt-toolkit (>=2.0.9)", "pyre-check (==0.9.18)", "setuptools-rust (>=1.5.2)", "setuptools_scm (>=6.0.1)", "slotscheck (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "ufmt (==2.3.0)", "usort (==1.0.7)"]
-
-[package.source]
-type = "legacy"
-url = "https://test.pypi.org/simple"
-reference = "test-pypi"
+dev = ["Sphinx (>=5.1.1)", "black (==23.12.1)", "build (>=0.10.0)", "coverage (>=4.5.4)", "fixit (==2.1.0)", "flake8 (==7.0.0)", "hypothesis (>=4.36.0)", "hypothesmith (>=0.0.4)", "jinja2 (==3.1.3)", "jupyter (>=1.0.0)", "maturin (>=0.8.3,<1.5)", "nbsphinx (>=0.4.2)", "prompt-toolkit (>=2.0.9)", "pyre-check (==0.9.18)", "setuptools-rust (>=1.5.2)", "setuptools-scm (>=6.0.1)", "slotscheck (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "ufmt (==2.3.0)", "usort (==1.0.7)"]
 
 [[package]]
 name = "markdown-it-py"
@@ -511,11 +515,6 @@ files = [
 [package.extras]
 plugins = ["importlib-metadata"]
 windows-terminal = ["colorama (>=0.4.6)"]
-
-[package.source]
-type = "legacy"
-url = "https://test.pypi.org/simple"
-reference = "test-pypi"
 
 [[package]]
 name = "pytest"
@@ -743,4 +742,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9"
-content-hash = "f136e690c9d39f76d9d42683c5cae75ce6cd5a701e262ab42e1110ef3bec4653"
+content-hash = "6b36266b9d99f8b9dcaae7c72f50ff7b629de90054c8861e0ec1f92b8ede9bd7"
