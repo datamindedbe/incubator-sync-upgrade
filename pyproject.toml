@@ -21,12 +21,6 @@ coverage = "^7.2.7"
 [tool.poetry.scripts]
 refactor = "syncupgrade.cli:cli"
 
-
-[[tool.poetry.source]]
-name = "test-pypi"
-url = "https://test.pypi.org/simple/"
-priority = "primary"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
