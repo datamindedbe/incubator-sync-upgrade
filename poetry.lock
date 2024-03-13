@@ -284,26 +284,21 @@ reference = "test-pypi"
 
 [[package]]
 name = "libcst"
-version = "1.1.0"
-description = "A concrete syntax tree with AST-like properties for Python 3.5, 3.6, 3.7, 3.8, 3.9, and 3.10 programs."
+version = "1.2.0"
+description = "A concrete syntax tree with AST-like properties for Python 3.0 through 3.12 programs."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "libcst-1.1.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:34539e80d82ce8bbbb15477e9b64493ea979b9c0789008d0eb910eb5fca3b3f4"},
-    {file = "libcst-1.1.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:74311ccdfdbd059133fce59dba130e12d5f56e198df39882e8238b9053344995"},
-    {file = "libcst-1.1.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2472e7eda492ae36964f4e4a3bbb49726ca60959dd81bb7bec8e51ff3d572eb0"},
-    {file = "libcst-1.1.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6db9dc328febe2d94b5b33c33d324be43349192cecd12ed461fef974ace03d30"},
-    {file = "libcst-1.1.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:2354bd7a05cc28e484a35ae4e0f94f22b6cf6df66c07a13bb03d9f4db1f25c42"},
-    {file = "libcst-1.1.0.tar.gz", hash = "sha256:75c7c602afacada4e8866b275b81f8628a48487d9b1f990ec44d8d8a18458c98"},
+    {file = "libcst-1.2.0.tar.gz", hash = "sha256:52d100aa72bec37f5b695df39af3a21b4b2d6898bbf47ed58b5a2ebc13b13bbb"},
 ]
 
 [package.dependencies]
 pyyaml = ">=5.2"
-typing-extensions = ">=3.7.4.2"
-typing-inspect = ">=0.4.0"
+typing_extensions = ">=3.7.4.2"
+typing_inspect = ">=0.4.0"
 
 [package.extras]
-dev = ["Sphinx (>=5.1.1)", "black (==23.9.1)", "build (>=0.10.0)", "coverage (>=4.5.4)", "fixit (==2.0.0.post1)", "flake8 (>=3.7.8,<5)", "hypothesis (>=4.36.0)", "hypothesmith (>=0.0.4)", "jinja2 (==3.1.2)", "jupyter (>=1.0.0)", "maturin (>=0.8.3,<0.16)", "nbsphinx (>=0.4.2)", "prompt-toolkit (>=2.0.9)", "pyre-check (==0.9.18)", "setuptools-rust (>=1.5.2)", "setuptools-scm (>=6.0.1)", "slotscheck (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "ufmt (==2.2.0)", "usort (==1.0.7)"]
+dev = ["Sphinx (>=5.1.1)", "black (==23.12.1)", "build (>=0.10.0)", "coverage (>=4.5.4)", "fixit (==2.1.0)", "flake8 (==7.0.0)", "hypothesis (>=4.36.0)", "hypothesmith (>=0.0.4)", "jinja2 (==3.1.3)", "jupyter (>=1.0.0)", "maturin (>=0.8.3,<1.5)", "nbsphinx (>=0.4.2)", "prompt-toolkit (>=2.0.9)", "pyre-check (==0.9.18)", "setuptools-rust (>=1.5.2)", "setuptools_scm (>=6.0.1)", "slotscheck (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "ufmt (==2.3.0)", "usort (==1.0.7)"]
 
 [package.source]
 type = "legacy"
