@@ -12,7 +12,7 @@ Using SyncUpgrade to upgrade a DAG from Airflow 1 to Aiflow 2 would look somethi
 
 ![demo](https://github.com/datamindedbe/sync-upgrade/assets/63344830/9a38030f-049a-4539-a272-19b0f445b15b)
 
-
+Last updated: `2024-03-13`
 
 # Installation
 
